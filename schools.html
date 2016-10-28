@@ -11,6 +11,7 @@
 	<link rel="stylesheet" href="assets/cluster/MarkerCluster.css" />
 	<link rel="stylesheet" href="assets/cluster/MarkerCluster.Default.css" />
 	<link rel = "stylesheet" href = "assets/search/leaflet-search.css"/>
+	<link rel = "stylesheet" href = "assets/default-extent/leaflet.defaultextent.css"/>
 
 <style type="text/css">
     html, body { 
@@ -59,6 +60,7 @@
   </div>
 
   <script src="http://cdn.leafletjs.com/leaflet-0.6.2/leaflet.js"></script> 
+  <script src="assets/default-extent/leaflet.defaultextent.js"></script>
   <script src="http://k4r573n.github.io/leaflet-control-osm-geocoder/Control.OSMGeocoder.js"></script>   
   <script src="data/points_rand.js"></script>
   <script src="assets/cluster/leaflet.markercluster-src.js"></script>
@@ -85,6 +87,9 @@
 	    layers: [osmMap] // only add one!
     })
     .setView([54.655078, -6.969706], 9);
+    
+    L.control.defaultExtent().addTo(map);
+		
     
     var baseLayers = {
 	"OSM Mapnik": osmMap,
