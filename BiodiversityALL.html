@@ -1,0 +1,450 @@
+<!doctype html>
+<html>
+<head>
+    <title>Biodiversity</title>
+    <meta charset="utf-8">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.6.2/leaflet.js"></script> 
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.6.2/leaflet.css" />
+    <link href="https://maxcdn.bootstrapcdn.com/bootswatch/3.3.7/yeti/bootstrap.min.css" rel="stylesheet">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+  <!--Home Button ie Default Extent-->
+  <link rel="stylesheet" href="assets/default-extent/leaflet.defaultextent.css" />
+  <script src="assets/default-extent/leaflet.defaultextent.js"></script>
+  <!--locate control from source -->
+  <link rel="stylesheet" href="assets/control-locate/L.Control.Locate.min.css" />
+  <script src="assets/control-locate/L.Control.Locate.min.js"></script>
+  <!--Leaflet Hash via Mapbox CDN-->
+  <script src='https://api.tiles.mapbox.com/mapbox.js/plugins/leaflet-hash/v0.2.1/leaflet-hash.js'></script>
+  <!-- Leaflet Omnivore Plugin GeoJson KML Etc -->
+  <script src='https://api.tiles.mapbox.com/mapbox.js/plugins/leaflet-omnivore/v0.2.0/leaflet-omnivore.min.js'></script>
+  <link rel="stylesheet" href="https://k4r573n.github.io/leaflet-control-osm-geocoder/Control.OSMGeocoder.css"/>
+  <script src="https://k4r573n.github.io/leaflet-control-osm-geocoder/Control.OSMGeocoder.js"></script>
+  <!-- leaflet search -->
+  <link rel="stylesheet" href="assets/search/leaflet-search.min.css" />
+  <script src="assets/search/leaflet-search.src.js"></script>
+
+  <link rel="stylesheet" href="assets/cluster/MarkerCluster.css" />
+<link rel="stylesheet" href="assets/cluster/MarkerCluster.Default.css" />
+<link rel="stylesheet" href="assets/sidebar/L.Control.Sidebar.css" />
+ 	
+    <style type="text/css">
+        html, body { 
+        height:100%
+	}
+
+        #map {
+        margin: 1em auto;
+        height:70%;
+		}
+		.info {
+			padding: 8px 18px;
+			background: white;
+			background: rgba(255,255,255,0.9);
+			box-shadow: 0 0 15px rgba(0,0,0,0.2);
+			border-radius: 5px;
+		}
+		
+		.info h4, .info h3, .info h2 {
+			margin: 0px;
+		}
+		
+		.legend {
+			text-align: left;
+			line-height: 18px;
+			color: #555;
+		}
+		.legend .circle {
+			border-radius: 50%;
+			width: 10px;
+			height: 10px;
+			margin-top: 8px;
+		}
+		.legend i {
+			width: 18px;
+			height: 18px;
+			float: left;
+			margin-right: 30px;
+			opacity: 0.7;
+		}
+		//.legend label,
+		//.legend span {
+		//display:block;
+		//float:left;
+		//height:15px;
+		//width:30%;
+		//text-align:center;
+		//font-size:9px;
+		//color:#808080;
+		//}
+		
+
+		           
+    </style>
+   
+
+</head>
+<body>
+    <body>
+  <div id="map" style="width: 100%; height: 100%"></div>
+  <body>
+  <div id='map-ui'>
+    <h2 style="padding:15px;"></h2>
+    <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+      <div class="panel panel-primary">
+        <div class="panel-heading" role="tab" id="schoolType">
+          <h4 class="panel-title">
+            <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseSocial" aria-expanded="true" aria-controls="collapseSocial">
+              Eco Communities NI
+            </a>
+          </h4>
+        </div>
+      </div>
+    </div>
+  </div>
+	<button id="helpbutton" role="button" class="btn btn-primary">Biodiversity Information</button>
+	<div id="helpsidebar">
+    <h1>Quick Reference Guide</h1>
+    <div>This is the quick help document where you can find useful information about the map you're looking at!
+	</div>
+	<button id="homepage" role="button" class="btn btn-primary">Eco Communities NI Project</button>
+    <script src="assets/geojson-tiles/geojson-vt-dev.js"></script>
+    <script src="assets/geojson-tiles/L.CanvasTiles.js"></script>
+	<script src='https://api.mapbox.com/mapbox.js/plugins/leaflet-pip/v0.1.0/leaflet-pip.min.js'></script>
+    <script src="data/Landcover2012.js"></script> 
+    <script src="data/Rivers_Simplify.json"></script>
+    <script src="assets/cluster/leaflet.markercluster-src.js"></script>
+    <script src="data/BelfastTrees.js"></script>
+    <script src = "assets/button/L.Control.Button.js" > </script> 
+	<script src = "assets/sidebar/L.Control.Sidebar.js" > </script>
+    
+
+    <script>
+		//Inspiration: http://bl.ocks.org/Sumbera/c67e5551b21c68dc8299
+		//Inspiration: http://bl.ocks.org/sumbera/11114288
+		
+        var leafletMap = L.map('map').setView([54.655078, -6.969706],9);
+        
+        L.control.defaultExtent().addTo(leafletMap);
+        //leafletMap.spin(true);
+        //L.tileLayer("http://{s}.sm.mapstack.stamen.com/(toner-background,$fff[difference],$fff[@23],$fff[hsl-saturation@20],toner-lines[destination-in])/{z}/{x}/{y}.png")
+           // .addTo(leafletMap);
+
+		var mapbox = L.tileLayer('https://api.mapbox.com/styles/v1/mapbox/streets-v9/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1IjoibWJhbmRlcnNvbjMiLCJhIjoiY2lscmNwbm91MDhxN3VobTFneGhscXdrOSJ9.v6i-0EYa3CW7icfo0a_Chw', {
+			attribution: '&copy; <a href="https://www.mapbox.com/about/maps/">MapBox</a> &copy; <a href="http://www.openstreetmap.org/about/">OpenStreetMap</a>',
+			maxZoom: 18,
+			});
+
+		var osm = L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+			attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+		});
+		
+		mapbox.addTo(leafletMap);
+		var streets = osm;
+		var transit = mapbox;
+		//var basemaps = {
+			//"<div class='layers-control-img'><img src='assets/images/layer-control-images/osm-streets.png'></div> Streets": osm,
+			//"<div class='layers-control-img'><img src='assets/images/layer-control-images/transit.png'></div> Transit": transit,
+		//};
+		
+	var basemaps = {
+			"Streets": osm,
+			"Transit": transit
+		};
+		
+	var layerControl = L.control.layers(basemaps, null, {
+      position: 'topright',
+      autoZIndex: false
+    }).addTo(leafletMap);	
+    
+    var overlays;
+    
+    
+    
+    var osmGeocoder = new L.Control.OSMGeocoder({
+            collapsed: 'true',
+            position: 'topleft',
+            text: 'My Area',
+			});
+    leafletMap.addControl(osmGeocoder);
+    
+    
+    
+    var parcels = L.geoJson();
+    var tileData = omnivore.topojson("https://s3-eu-west-1.amazonaws.com/ecocommunitiesni/LC2012_simp.json", null, parcels);
+    var search;
+    tileData.on('ready', function() {
+      console.log('parcel data ready');
+      leafletMap.setView([54.655078, -6.969706],9);
+      
+     //leafletMap.fitBounds(parcels.getBounds());
+      //$(".blank").fadeOut();
+      //leafletMap.spin(false);
+      //setTimeout(function() {
+        //sidebar.show()
+      //}, 700);
+      //initiate search after parcel data has loaded
+      //search = new L.Control.Search({
+        //layer: parcels,
+        //propertyName: 'index',
+        //initial: false,
+        //zoom: 10,
+        //collapsed: false,
+        //textPlaceholder: 'Land cover type',
+        //minLength: 4
+      //}).addTo(leafletMap);
+     // search.on('search_locationfound', function(e) {
+        //search.collapse();
+        //setTimeout(function() {
+         // leafletMap.fire('click', {
+           // latlng: e.latlng
+          //});
+     
+      //leafletMap.setZoom(9);
+
+        var tileOptions = {
+            maxZoom: 20,  // max zoom to preserve detail on
+            tolerance: 5, // simplification tolerance (higher means simpler)
+            extent: 4096, // tile extent (both width and height)
+            buffer: 64,   // tile buffer on each side
+            debug: 0,      // logging level (0 to disable, 1 or 2)
+
+            indexMaxZoom: 0,        // max zoom in the initial tile index
+            indexMaxPoints: 100000, // max number of points per tile in the index
+        };
+       
+       //--interaction on the underlying polygon not drawn but represented by the tiles - they draw better--//
+      var highlight;
+      leafletMap.on('click', function(e) {
+        if (highlight) {
+          leafletMap.removeLayer(highlight)
+        }
+        var x = e.latlng.lng;
+        var y = e.latlng.lat;
+        var layerData = leafletPip.pointInLayer([x, y], parcels, true);
+        if (!layerData[0]) {
+          console.log('nothing to see here')
+        } else {
+          leafletMap.spin(true);
+          var highlightIndex = layerData[0].feature.properties.code_12;
+          highlight = new L.geoJson(data, {
+            filter: function(feature, layer) {
+              return feature.properties.code_12 == highlightIndex
+            },
+            style: {
+              color: 'deepskyblue',
+              fillColor: 'deepskyblue'
+            }
+          }).addTo(leafletMap);
+          
+          var popup = 'Landcover Type: ' + highlightIndex;
+          leafletMap.on('popupopen', function() {
+            leafletMap.spin(false)
+          });
+          leafletMap.openPopup(popup, e.latlng);
+          leafletMap.on('popupclose', function() {
+          leafletMap.removeLayer(highlight)
+          });
+        }
+      });
+      //end point in polygon
+        
+        function colorizeFeatures(data) {
+            var counter = 0;
+            for (var i = 0; i < data.features.length; i++) {
+                data.features[i].properties.color = 'hsl(' + 360 * Math.random() + ', 50%, 50%)';
+                counter += data.features[i].geometry.coordinates[0].length;
+            }
+            return counter;
+        }
+				
+
+        var tileIndex = geojsonvt(data, tileOptions);
+     //take json output from geojson-vt and draw it with L.canvasTiles
+
+		colorizeFeatures(data);
+      
+        var tileLayer = L.canvasTiles()
+                      .params({ debug: false, padding: 5 })
+                      .drawing(drawingOnCanvas)
+ 
+                   
+     
+        var pad = 0;
+
+        tileLayer.addTo(leafletMap);
+        tileLayer.setZIndex(10);
+        
+        function drawingOnCanvas(canvasOverlay, params) {
+
+            var bounds = params.bounds;
+            params.tilePoint.z = params.zoom;
+
+            var ctx = params.canvas.getContext('2d');
+            ctx.globalCompositeOperation = 'source-over';
+
+
+            console.log('getting tile z' + params.tilePoint.z + '-' + params.tilePoint.x + '-' + params.tilePoint.y);
+
+            var tile = tileIndex.getTile(params.tilePoint.z, params.tilePoint.x, params.tilePoint.y);
+            if (!tile) {
+                console.log('tile empty');
+                return;
+            }
+
+            ctx.clearRect(0, 0, params.canvas.width, params.canvas.height);
+
+            var features = tile.features;
+
+            ctx.strokeStyle = '{{ page.color }}';
+            ctx.globalAlpha = 0.6;
+
+
+            for (var i = 0; i < features.length; i++) {
+                var feature = features[i],
+                    type = feature.type;
+
+                ctx.fillStyle = feature.tags.color ? feature.tags.color : 'transparent';
+                ctx.beginPath();
+
+                for (var j = 0; j < feature.geometry.length; j++) {
+                    var geom = feature.geometry[j];
+
+                    if (type === 1) {
+                        ctx.arc(geom[0] * ratio + pad, geom[1] * ratio + pad, 2, 0, 2 * Math.PI, false);
+                        continue;
+                    }
+
+                    for (var k = 0; k < geom.length; k++) {
+                        var p = geom[k];
+                        var extent = 4096;
+                       
+                        var x = p[0] / extent * 256;
+                        var y = p[1] / extent * 256;
+                        if (k) ctx.lineTo(x  + pad, y   + pad);
+                        else ctx.moveTo(x  + pad, y  + pad);
+                    }
+                }
+
+                if (type === 3 || type === 1) ctx.fill('evenodd');
+                ctx.stroke();
+            }
+
+        };
+	});
+	
+	
+        var riverStyle = {
+			"1": "0.5",
+			"2": "1",
+			"3": "1.3",
+			"4": "1.5",
+			"5": "2",
+			"6": "3",
+			"7": "4"
+		}
+		
+        var river_segments = L.geoJson(rivers, {
+			style: function(feature) {
+				return {
+					color: "#29439c",
+					weight: riverStyle[feature.properties.STRAHLER],
+					opacity: 1.0
+				}
+			}
+		});
+		
+		var conditiontrees = {
+        "Dead": 'black',
+        "Dying": 'brown',
+        "Fair": 'yellow',
+        "Good": 'green',
+        "Poor": 'orange',
+        "Very Poor": 'red',
+        "N/A": 'grey'
+		};
+		
+		var markerstrees = L.markerClusterGroup({ disableClusteringAtZoom: 14 });
+	
+		var belfast_trees = L.geoJson(treepoints, {
+			pointToLayer: function (feature, latlng) {	                   
+                return new L.CircleMarker(latlng, {
+                    radius: 2,
+                    fillColor: conditiontrees[feature.properties.CONDITION],
+                    color: conditiontrees[feature.properties.CONDITION],
+                    weight: 1,
+                    opacity: 1,
+                    fillOpacity: 0.8,
+                    clickable: true
+                });
+            },
+			onEachFeature: function (feature, layer) //functionality on click on feature
+				{
+					layer.bindPopup("Species Type: " + feature.properties.SPECIESTYP + '</b><br>' + "Species: " + feature.properties.SPECIES + '</b><br>' + "Age: " + feature.properties.AGE + '</b><br>' + "Condition: " + feature.properties.CONDITION); //School information
+				}
+		});
+		markerstrees.addLayer(belfast_trees); // add it to the cluster group
+	
+		
+		
+		var overlayMaps = { //put all overlay layers into one variable container
+			"Rivers": river_segments,
+			//"Landcover": tileLayer,
+			"Belfast Trees": markerstrees
+		};
+		
+
+		L.control.layers(overlayMaps).addTo(leafletMap); // add vector layers to map
+		
+		
+		function treeColour(d) {
+			switch (d) {
+				case 'Dead': return 'black';
+				case 'Dying': return 'brown';
+				case 'Fair': return 'yellow';
+				case 'Good': return 'green';
+				case 'Poor': return 'orange';
+				case 'Very Poor': return 'red';
+				case 'N/A': return 'grey';
+				default: return 'grey';
+			}
+		};
+		
+		
+		var legend = L.control({position: 'bottomright'});
+		legend.onAdd = function (leafletMap) {
+		var div = L.DomUtil.create('div', 'info legend');
+		div.innerHTML += "<h2>Tree Condition</h2>"
+			treeCondition = ['Dead', 'Dying', 'Fair', 'Good', 'Poor', 'Very Poor', 'N/A'];
+		// loop through the tree and generate a label with a coloured square for each value
+		for (var i = 0; i < treeCondition.length; i++) {
+			div.innerHTML += '<i class="circle" style="background:' + treeColour(treeCondition[i]) + '"></i> ' + (treeCondition[i] ? treeCondition[i] + '<br>' : '+');
+		}
+		return div;
+		};
+	
+		legend.addTo(leafletMap);
+		
+		var homepagebutton = new L.Control.Button(L.DomUtil.get('homepage'), { toggleButton: 'active' });
+		homepagebutton.addTo(map);
+		homepagebutton.on('click', function () {
+		window.location.href = 'https://ecocommni.github.io/BootstrapTest/'
+		});
+	
+		sidebar = L.control.sidebar('helpsidebar', { position: 'right' });
+		sidebar.addTo(map);
+
+		helpButton = new L.Control.Button(L.DomUtil.get('helpbutton'), { toggleButton: 'active' });
+		helpButton.addTo(map);
+		helpButton.on('click', function () {
+		if (helpButton.isToggled()) {
+			sidebar.hide();
+		} else {
+			sidebar.show();
+		}
+		});
+	
+	
+    </script>
+</body>
+</html>

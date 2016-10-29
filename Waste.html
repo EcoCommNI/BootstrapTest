@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Waste and Pollution</title>
+  <meta charset="utf-8" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.6.2/leaflet.css" />
+  <link href="https://maxcdn.bootstrapcdn.com/bootswatch/3.3.7/yeti/bootstrap.min.css" rel="stylesheet">
+  <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+	<link rel="stylesheet" href="assets/geocoder/Control.OSMGeocoder.css" />
+	<link rel="stylesheet" href="assets/cluster/MarkerCluster.css" />
+	<link rel="stylesheet" href="assets/cluster/MarkerCluster.Default.css" />
+	<link rel = "stylesheet" href = "assets/search/leaflet-search.css"/>
+	<link rel = "stylesheet" href = "assets/default-extent/leaflet.defaultextent.css"/>
+	<link rel="stylesheet" href="assets/sidebar/L.Control.Sidebar.css" />
+
+<style type="text/css">
+    html, body { 
+        height:100%
+    }
+    #map {
+        margin: 1em auto;
+        height:70%;
+    }
+    .info {
+    padding: 6px 8px;
+    font: 14px/16px Arial, Helvetica, sans-serif;
+    background: white;
+    background: rgba(255,255,255,0.8);
+    box-shadow: 0 0 15px rgba(0,0,0,0.2);
+    border-radius: 5px;
+	}
+	.info h4 {
+    margin: 0 0 5px;
+    color: #777;
+	}
+    .legend {
+	text-align: left;
+	line-height: 18px;
+	color: #555;
+	}
+	.legend i {
+	width: 18px;
+	height: 18px;
+	float: left;
+	margin-right: 8px;
+	opacity: 0.7;
+	}
+	.legend .circle {
+	border-radius: 50%;
+	width: 10px;
+	height: 10px;
+	margin-top: 8px;
+	}                                                                                                                                                                                                            
+</style>
+</head>
+<body>
+  <div id="map" style="width: 100%; height: 100%"></div>
+	<button id="helpbutton" role="button" class="btn btn-primary">Waste and Pollution Information</button>
+	<div id="helpsidebar">
+    <h1>Quick Reference Guide</h1>
+    <div>This is the quick help document where you can find useful information about the map you're looking at!
+	</div>
+	<button id="homepage" role="button" class="btn btn-primary">Eco Communities NI Project</button>
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.6.2/leaflet.js"></script> 
+  <script src="assets/default-extent/leaflet.defaultextent.js"></script>
+  <script src="assets/geocoder/Control.OSMGeocoder.js"></script>   
+  <script src="data/points_rand.js"></script>
+   <script src="data/WASTE_0607.json"></script>
+   <script src="data/WASTE_1415.json"></script>
+    <script src="data/Change06_15.json"></script>
+  <script src="assets/cluster/leaflet.markercluster-src.js"></script>
+  <script  src = "assets/search/leaflet-search.js" > </script>
+  <script src = "assets/button/L.Control.Button.js" > </script> 
+  <script src = "assets/sidebar/L.Control.Sidebar.js" > </script> 
+  <script>
+
+	
+	var osmLink = '<a href="http://openstreetmap.org">OpenStreetMap</a>',
+		topoLink = '<a href="http://{s}.tile.opentopomap.org">OpenTopoMap</a>',
+		thunLink = '<a href="http://thunderforest.com/">Thunderforest</a>';
+		
+	var osmUrl = 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+		osmAttrib = '&copy; ' + osmLink + ' Contributors',
+		topoUrl = 'http://{s}.tile.opentopomap.org/{z}/{x}/{y}.png',
+		topoAttrib = '&copy; ' + topoLink + ' Contributors',
+		landUrl = 'http://{s}.tile.thunderforest.com/landscape/{z}/{x}/{y}.png',
+		thunAttrib = '&copy; '+osmLink+' Contributors & '+thunLink;
+		
+	var osmMap = L.tileLayer(osmUrl, {attribution: osmAttrib}),
+		topoMap = L.tileLayer(topoUrl, {attribution: topoAttrib}),
+		landMap = L.tileLayer(landUrl, {attribution: thunAttrib});
+		
+	var OpenStreetMap_BW = L.tileLayer('http://{s}.tiles.wmflabs.org/bw-mapnik/{z}/{x}/{y}.png', {
+	maxZoom: 18,
+	attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+	});
+		
+	var map = L.map('map', {
+	    layers: [OpenStreetMap_BW] // only add one!
+    })
+    .setView([54.655078, -6.969706], 9);
+    
+    L.control.defaultExtent().addTo(map);
+		
+    
+    var baseLayers = {
+	"OSM Mapnik": osmMap,
+	"Topography": topoMap,
+	"Landscape": landMap,
+	"Black & White": OpenStreetMap_BW
+	};
+
+	L.control.layers(baseLayers).addTo(map);
+	
+	var osmGeocoder = new L.Control.OSMGeocoder({
+            collapsed: 'true',
+            position: 'topleft',
+            text: 'My Area',
+			});
+        map.addControl(osmGeocoder);
+        
+	//var markers = L.markerClusterGroup({ disableClusteringAtZoom: 16 });
+	
+	function getWColor(d) {
+		return d > 50  ? '#F500F5' :
+				d > 40  ? '#9300F5' :
+				d > 30  ? '#0000F5' :
+				d > 25   ? '#019fde' :
+							'#00F5F5';
+	}
+	
+	function getColorChange(d) {
+		return d > 80  ? '#ff0000' :
+				d > 60  ? '#ffc800' :
+				d > 40  ? '#b6ff8f' :
+				d > 20   ? '#33c2ff' :
+							'#0000ff';
+	}
+	
+	function style(feature) {
+		return {
+			fillColor: getWColor(feature.properties.DryRecRate),
+			weight: 2,
+			opacity: 1,
+			color: 'white',
+			dashArray: '3',
+			fillOpacity: 0.7
+		};
+	}
+
+	function style1415(feature) {
+		return {
+			fillColor: getWColor(feature.properties.DryRec1415),
+			weight: 2,
+			opacity: 1,
+			color: 'white',
+			dashArray: '3',
+			fillOpacity: 0.7
+		};
+	}
+
+	function change0615(feature) {
+		return {
+			fillColor: getColorChange(feature.properties.PerC06_15),
+			weight: 2,
+			opacity: 1,
+			color: 'white',
+			dashArray: '3',
+			fillOpacity: 0.7
+		};
+	}
+
+	var waste = L.geoJson(waste0607, {
+		style: style,
+		onEachFeature: onEachFeature
+		}).addTo(map);
+
+	var waste1415 = L.geoJson(waste1415, {
+		style: style1415,
+		onEachFeature: onEachFeature1415
+	});
+	
+	var wasteChange = L.geoJson(change06_15, {
+		style: change0615,
+		onEachFeature: onEachFeatureChange
+	});
+	
+	var overLayers = {
+	"Dry Recycling Rate 2006-2007": waste,
+	"Dry Recycling Rate 2014-2015": waste1415,
+	"% Increase Dry Recycle Rate 2006 - 2015": wasteChange 
+	};
+	
+	L.control.layers(overLayers).addTo(map);
+	
+	function highlightFeature(e) {
+		var layer = e.target;
+
+		layer.setStyle({
+			weight: 5,
+			color: '#666',
+			dashArray: '',
+			fillOpacity: 0.7
+		});
+
+		if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
+        layer.bringToFront();
+        };
+	}
+	
+	function resetHighlight(e) {
+		var layer = e.target;
+    layer.resetStyle();
+	}
+
+	//function resetHighlight(e) {
+    //waste.resetStyle(e.target);
+	//}
+	
+	function zoomToFeature(e) {
+    map.fitBounds(e.target.getBounds());
+	}
+	
+
+	
+	function onEachFeature(feature, layer) {
+		layer.bindPopup("District: " + feature.properties.LGDName + '</b><br>' + "Dry Recycling Rate: " + feature.properties.DryRecRate + '</b><br>' + "Landfill Rate: " + feature.properties.LA_lF_rate + '</b><br>' + "Waste in KG Per Capita: " + feature.properties.KG_P_CAP); // information
+		layer.on({
+			mouseover: highlightFeature,
+			mouseout: resetHighlight,
+			click: function(e) {
+				e.layer.openPopup();
+			}
+			//click: zoomToFeature
+		
+		});
+	};
+	
+	function onEachFeature1415(feature, layer) {
+		layer.bindPopup("District: " + feature.properties.LGDName + '</b><br>' + "Dry Recycling Rate: " + feature.properties.DryRec1415 + '</b><br>' + "Landfill Rate: " + feature.properties.LA_IF1415 + '</b><br>' + "Waste in KG Per Capita: " + feature.properties.KG_P1415); // information
+		layer.on({
+			mouseover: highlightFeature,
+			mouseout: resetHighlight,
+			click: function(e) {
+				e.layer.openPopup();
+			}
+			//click: zoomToFeature
+		
+		});
+	};
+	
+	function onEachFeatureChange(feature, layer) {
+		//var chartUrl = 'data/CHARTS/' + feature.properties.LGDName + '.png';
+		switch (feature.properties.LGDName) {
+			case 'ANTRIM' : return layer.bindPopup('<img src="data/CHARTS/Antrim.png" alt="" width="300px"/>'+ " % Increase from 2006 to 2015: " + feature.properties.PerC06_15);
+			case 'ARDS' : return layer.bindPopup('<img src="data/CHARTS/Ards.png" alt="" width="300px"/>'+ " % Increase from 2006 to 2015: " + feature.properties.PerC06_15);
+			case 'ARMAGH' : return layer.bindPopup('<img src="data/CHARTS/Armagh.png" alt="" width="300px"/>'+ " % Increase from 2006 to 2015: " + feature.properties.PerC06_15);
+			case 'BALLYMENA' : return layer.bindPopup('<img src="data/CHARTS/Ballymena.png" alt="" width="300px"/>'+ " % Increase from 2006 to 2015: " + feature.properties.PerC06_15);
+			case 'BALLYMONEY' : return layer.bindPopup('<img src="data/CHARTS/Ballymoney.png" alt="" width="300px"/>'+ " % Increase from 2006 to 2015: " + feature.properties.PerC06_15);
+			case 'BANBRIDGE' : return layer.bindPopup('<img src="data/CHARTS/Banbridge.png" alt="" width="300px"/>'+ " % Increase from 2006 to 2015: " + feature.properties.PerC06_15);
+			case 'BELFAST' : return layer.bindPopup('<img src="data/CHARTS/Belfast.png" alt="" width="300px"/>'+ " % Increase from 2006 to 2015: " + feature.properties.PerC06_15);
+			case 'CARRICKFERGUS' : return layer.bindPopup('<img src="data/CHARTS/carrickfergus.png" alt="" width="300px"/>'+ " % Increase from 2006 to 2015: " + feature.properties.PerC06_15);
+			case 'CASTLEREAGH' : return layer.bindPopup('<img src="data/CHARTS/Castlereagh.png" alt="" width="300px"/>'+ " % Increase from 2006 to 2015: " + feature.properties.PerC06_15);
+			case 'COLERAINE' : return layer.bindPopup('<img src="data/CHARTS/Coleraine.png" alt="" width="300px"/>'+ " % Increase from 2006 to 2015: " + feature.properties.PerC06_15);
+			case 'COOKSTOWN' : return layer.bindPopup('<img src="data/CHARTS/Cookstown.png" alt="" width="300px"/>'+ " % Increase from 2006 to 2015: " + feature.properties.PerC06_15);
+			case 'CRAIGAVON' : return layer.bindPopup('<img src="data/CHARTS/Craigavon.png" alt="" width="300px"/>'+ " % Increase from 2006 to 2015: " + feature.properties.PerC06_15);
+			case 'DERRY' : return layer.bindPopup('<img src="data/CHARTS/Derry.png" alt="" width="300px"/>'+ " % Increase from 2006 to 2015: " + feature.properties.PerC06_15);
+			case 'DOWN' : return layer.bindPopup('<img src="data/CHARTS/Down.png" alt="" width="300px"/>'+ " % Increase from 2006 to 2015: " + feature.properties.PerC06_15);
+			case 'DUNGANNON' : return layer.bindPopup('<img src="data/CHARTS/Dungannon.png" alt="" width="300px"/>'+ " % Increase from 2006 to 2015: " + feature.properties.PerC06_15);
+			case 'FERMANAGH' : return layer.bindPopup('<img src="data/CHARTS/Fermanagh.png" alt="" width="300px"/>'+ " % Increase from 2006 to 2015: " + feature.properties.PerC06_15);
+			case 'LARNE' : return layer.bindPopup('<img src="data/CHARTS/Larne.png" alt="" width="300px"/>'+ " % Increase from 2006 to 2015: " + feature.properties.PerC06_15);
+			case 'LIMAVADY' : return layer.bindPopup('<img src="data/CHARTS/Limavady.png" alt="" width="300px"/>'+ " % Increase from 2006 to 2015: " + feature.properties.PerC06_15);
+			case 'LISBURN' : return layer.bindPopup('<img src="data/CHARTS/Lisburn.png" alt="" width="300px"/>'+ " % Increase from 2006 to 2015: " + feature.properties.PerC06_15);
+			case 'MAGHERAFELT' : return layer.bindPopup('<img src="data/CHARTS/Magherafelt.png" alt="" width="300px"/>'+ " % Increase from 2006 to 2015: " + feature.properties.PerC06_15);
+			case 'MOYLE' : return layer.bindPopup('<img src="data/CHARTS/Moyle.png" alt="" width="300px"/>'+ " % Increase from 2006 to 2015: " + feature.properties.PerC06_15);
+			case 'NEWRY and MOURNE' : return layer.bindPopup('<img src="data/CHARTS/NewryMourne.png" alt="" width="300px"/>'+ " % Increase from 2006 to 2015: " + feature.properties.PerC06_15);
+			case 'NEWTOWNABBEY' : return layer.bindPopup('<img src="data/CHARTS/Newtownabbey.png" alt="" width="300px"/>'+ " % Increase from 2006 to 2015: " + feature.properties.PerC06_15);
+			case 'NORTH DOWN' : return layer.bindPopup('<img src="data/CHARTS/NorthDown.png" alt="" width="300px"/>'+ " % Increase from 2006 to 2015: " + feature.properties.PerC06_15);
+			case 'OMAGH' : return layer.bindPopup('<img src="data/CHARTS/Omagh.png" alt="" width="300px"/>'+ " % Increase from 2006 to 2015: " + feature.properties.PerC06_15);
+			case 'STRABANE' : return layer.bindPopup('<img src="data/CHARTS/Strabane.png" alt="" width="300px"/>'+ " % Increase from 2006 to 2015: " + feature.properties.PerC06_15);
+			default: layer.bindPopup('<img src="data/CHARTS/Antrim.png" alt="" width="300px"/>'+ " % Increase from 2006 to 2015: " + feature.properties.PerC06_15);
+		}
+		//layer.bindPopup('<img src="data/CHARTS/Antrim.png" alt="" width="300px"/>');
+		//layer.bindPopup( "<img src=" + chartUrl + "/> District: " + feature.properties.LGDName + " % Increase: " + feature.properties.PerC06_15);
+		//layer.bindPopup('<img src="data/CHARTS/Antrim.png" alt="" width="300px"/>');
+		//layer.bindPopup("District: " + feature.properties.LGDName + '<br>' 
+		//+ "<b>% Increase Dry Recycle Rate: </b>" + feature.properties.PerC06_15 + '<br>' 
+		//+ <img src=" + iconUrl + "/>); // information
+		layer.on({
+			mouseover: highlightFeature,
+			mouseout: resetHighlight,
+			click: function(e) {
+				e.layer.openPopup();
+			}
+			//click: zoomToFeature
+		
+		});
+	};
+	
+	
+
+
+	
+
+	/*var colors = {
+        "playgroup not in a school": 'brown',
+        "playgroup in a school": 'orange',
+        "day nursery": 'yellow',
+        "prep dept": 'black',
+        "Nursery": 'green',
+        "Primary": 'red',
+        "Secondary": 'blue',
+        "Grammar": 'purple',
+        "Special Schools": 'pink'
+    };
+	
+	var points_rand = L.geoJson(points, {
+		pointToLayer: function (feature, latlng) {                    
+                return new L.CircleMarker(latlng, {
+                    radius: 8,
+                    fillColor: colors[feature.properties.SCHOOL_TYP],
+                    color: colors[feature.properties.SCHOOL_TYP],
+                    weight: 1,
+                    opacity: 1,
+                    fillOpacity: 0.8,
+                    clickable: true
+                });
+            },
+		onEachFeature: function (feature, layer) //functionality on click on feature
+			{
+				
+			layer.bindPopup("Name: " + feature.properties.CENTRE_NAM + '</b><br>' + "Address: " + feature.properties.ADDRESS + '</b><br>' + "Postcode: " + feature.properties.POSTCODE + '</b><br>' + "School Type: " + feature.properties.SCHOOL_TYP); //School information
+			}
+		});
+		
+	
+	function getColour(d) {
+		switch (d) {
+			case 'playgroup not in a school': return 'brown';
+			case 'playgroup in a school': return 'orange';
+			case 'day nursery': return 'yellow';
+			case 'prep dept': return 'black';
+			case 'Nursery': return 'green';
+			case 'Primary': return 'red';
+			case 'Secondary': return 'blue';
+			case 'Grammar': return 'purple';
+			case 'Special Schools': return 'pink';
+			default: return 'grey';
+		}
+	};*/
+	
+	
+	/*var searchControl = new L.Control.Search({
+		layer: points_rand,
+		propertyName: 'CENTRE_NAM',
+		circleLocation: true,
+		moveToLocation: function(latlng, title, map) {
+			//map.fitBounds( latlng.layer.getBounds() );
+			var zoom = map.getBoundsZoom(latlng.layer.getBounds());
+  			map.setView(latlng, zoom); // access the zoom
+		}
+		});
+	
+	searchControl.on('search_locationfound', function(e) {
+		on('search_collapsed', function(e) {
+			points_rand.resetStyle(layer);
+	})
+	});
+			
+	map.addControl( searchControl );  //inizialize search control
+	
+		
+	//var legend = L.control({position: 'bottomright'});
+	//legend.onAdd = function (map) {
+		//var div = L.DomUtil.create('div', 'info legend');
+			//schoolstatus = ['playgroup not in a school', 'playgroup in a school', 'day nursery', 'Nursery', 'Primary', 'Secondary', 'Grammar', 'Special Schools', 'prep dept'];
+		// loop through the schoolstatus and generate a label with a coloured square for each value
+		//for (var i = 0; i < schoolstatus.length; i++) {
+			//div.innerHTML += '<i class="circle" style="background:' + getColour(schoolstatus[i]) + '"></i> ' + (schoolstatus[i] ? schoolstatus[i] + '<br>' : '+');
+		//}
+		//return div;
+	//};
+	//legend.addTo(map);*/
+	
+	var homepagebutton = new L.Control.Button(L.DomUtil.get('homepage'), { toggleButton: 'active' });
+	homepagebutton.addTo(map);
+	homepagebutton.on('click', function () {
+    window.location.href = 'https://ecocommni.github.io/BootstrapTest/'
+	});
+	
+	sidebar = L.control.sidebar('helpsidebar', { position: 'right' });
+	sidebar.addTo(map);
+
+	helpButton = new L.Control.Button(L.DomUtil.get('helpbutton'), { toggleButton: 'active' });
+	helpButton.addTo(map);
+	helpButton.on('click', function () {
+    if (helpButton.isToggled()) {
+        sidebar.hide();
+    } else {
+        sidebar.show();
+    }
+	});
+	var legend = L.control({position: 'bottomright'});
+
+	legend.onAdd = function (map) {
+
+    var div = L.DomUtil.create('div', 'info legend'),
+        grades = [0, 25, 30, 40, 50],
+        labels = [];
+
+    // loop through our density intervals and generate a label with a colored square for each interval
+    for (var i = 0; i < grades.length; i++) {
+        div.innerHTML +=
+            '<i style="background:' + getWColor(grades[i] + 1) + '"></i> ' +
+            grades[i] + (grades[i + 1] ? '&ndash;' + grades[i + 1] + '<br>' : '+');
+    }
+    // FIRST LEGEND FOR TESTING
+    var Legend2 = L.control({position: 'bottomright'});
+
+    Legend2.onAdd = function (map) {
+        var legdiv = L.DomUtil.create('div', 'info legend'),
+            status = [0, 20, 40, 60, 80],
+            labels = ['0-20% Increase', '20-40% Increase', '40-60% Increase', '60-80% Increase', '80%+ Increase'];
+
+        // loop through our status intervals and generate a label with a coloured square for each interval
+        for (var i = 0; i < status.length; i++) {
+            legdiv.innerHTML +=
+                '<i style="background:' + getColorChange(status[i] + 1) + '"></i> ' + (status[i] ? labels[i] + '<br>' : '+');
+        }
+        return legdiv;
+    };
+    Legend2.addTo(map);
+
+    return div;
+	};
+
+	legend.addTo(map);
+
+  </script>
+ </body>
+</html>

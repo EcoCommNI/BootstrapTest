@@ -1,0 +1,26 @@
+var stations = [{
+"type": "FeatureCollection",
+"crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
+"features": [
+{ "type": "Feature", "properties": { "STATION": "BELFAST - EUROPA\/GVS" }, "geometry": { "type": "Point", "coordinates": [ -5.936183328977577, 54.594613995214637 ] } },
+{ "type": "Feature", "properties": { "STATION": "BELFAST - BOTANIC RAIL STATION" }, "geometry": { "type": "Point", "coordinates": [ -5.933000444338373, 54.588413892743148 ] } },
+{ "type": "Feature", "properties": { "STATION": "BELFAST - CENTRAL RAIL STATION" }, "geometry": { "type": "Point", "coordinates": [ -5.917282926378814, 54.59535932745549 ] } },
+{ "type": "Feature", "properties": { "STATION": "BELFAST - YORKGATE RAIL STATION" }, "geometry": { "type": "Point", "coordinates": [ -5.922764995097704, 54.611986049178462 ] } },
+{ "type": "Feature", "properties": { "STATION": "JORDANSTOWN RAIL STATION" }, "geometry": { "type": "Point", "coordinates": [ -5.894914233782512, 54.687230624117419 ] } },
+{ "type": "Feature", "properties": { "STATION": "GREENISLAND RAIL STATION" }, "geometry": { "type": "Point", "coordinates": [ -5.873050293577737, 54.70020039130403 ] } },
+{ "type": "Feature", "properties": { "STATION": "CARRICKFERGUS RAIL STATION" }, "geometry": { "type": "Point", "coordinates": [ -5.809563412062201, 54.717524489624402 ] } },
+{ "type": "Feature", "properties": { "STATION": "LARNE RAIL STATION" }, "geometry": { "type": "Point", "coordinates": [ -5.81388186967748, 54.850535843206366 ] } },
+{ "type": "Feature", "properties": { "STATION": "LARNE HARBOUR RAIL STATION" }, "geometry": { "type": "Point", "coordinates": [ -5.797476354821583, 54.84783125316028 ] } },
+{ "type": "Feature", "properties": { "STATION": "LISBURN RAIL STATION" }, "geometry": { "type": "Point", "coordinates": [ -6.046240816603227, 54.513906186952639 ] } },
+{ "type": "Feature", "properties": { "STATION": "LURGAN RAIL STATION" }, "geometry": { "type": "Point", "coordinates": [ -6.337565259677069, 54.467384649677733 ] } },
+{ "type": "Feature", "properties": { "STATION": "PORTADOWN RAIL STATION" }, "geometry": { "type": "Point", "coordinates": [ -6.442855951011594, 54.426237465506297 ] } },
+{ "type": "Feature", "properties": { "STATION": "POYNTZPASS RAIL HALT" }, "geometry": { "type": "Point", "coordinates": [ -6.372081423176619, 54.292897602169703 ] } },
+{ "type": "Feature", "properties": { "STATION": "NEWRY RAIL STATION" }, "geometry": { "type": "Point", "coordinates": [ -6.362651705875368, 54.188321554215342 ] } },
+{ "type": "Feature", "properties": { "STATION": "ANTRIM RAIL STATION" }, "geometry": { "type": "Point", "coordinates": [ -6.211139404305097, 54.717721292522185 ] } },
+{ "type": "Feature", "properties": { "STATION": "BALLYMENA RAIL STATION" }, "geometry": { "type": "Point", "coordinates": [ -6.285007705163801, 54.864332719078881 ] } },
+{ "type": "Feature", "properties": { "STATION": "BALLYMONEY RAIL STATION" }, "geometry": { "type": "Point", "coordinates": [ -6.513984034688685, 55.066391627767374 ] } },
+{ "type": "Feature", "properties": { "STATION": "PORTRUSH RAIL STATION" }, "geometry": { "type": "Point", "coordinates": [ -6.653687803553783, 55.203393274688715 ] } },
+{ "type": "Feature", "properties": { "STATION": "L'DERRY RAIL STATION" }, "geometry": { "type": "Point", "coordinates": [ -7.314414817027204, 54.991528527043286 ] } }
+]
+}
+];

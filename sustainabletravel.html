@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Sustainable Travel</title>
+  <meta charset="utf-8" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.6.2/leaflet.css" />
+  <link href="https://maxcdn.bootstrapcdn.com/bootswatch/3.3.7/yeti/bootstrap.min.css" rel="stylesheet">
+  <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+	<link rel="stylesheet" href="assets/geocoder/Control.OSMGeocoder.css" />
+	<link rel="stylesheet" href="assets/cluster/MarkerCluster.css" />
+	<link rel="stylesheet" href="assets/cluster/MarkerCluster.Default.css" />
+	<link rel = "stylesheet" href = "assets/search/leaflet-search.css"/>
+	<link rel = "stylesheet" href = "assets/default-extent/leaflet.defaultextent.css"/>
+	<link rel="stylesheet" href="assets/sidebar/L.Control.Sidebar.css" />
+	<script src='https://api.mapbox.com/mapbox.js/plugins/turf/v2.0.2/turf.min.js'></script>
+	<link rel="stylesheet" href="assets/icons/MapkeyIcons.css" />
+
+<style type="text/css">
+    html, body { 
+        height:100%
+    }
+    #map {
+        margin: 1em auto;
+        height:70%;
+    }
+    .info {
+      padding: 6px 8px;
+      font: 14px/16px Verdana, Geneva, sans-serif;
+      background: white;
+      background: rgba(255,255,255,0.8);
+      box-shadow: 0 0 15px rgba(0,0,0,0.2);
+      border-radius: 5px;
+    }
+    .info h4 {
+      font-family: Verdana, Geneva, sans-serif;
+      margin: 0 0 5px;
+      color: #065581;
+     }
+    .legend {
+	text-align: left;
+	line-height: 22px;
+	color: #555;
+	}
+	.legend i {
+	width: 22px;
+	height: 22px;
+	line-height: 22px;
+	float: left;
+	margin-right: 8px;
+	opacity: 0.7;
+	}
+	.legend .circle {
+	border-radius: 50%;
+	width: 10px;
+	height: 10px;
+	margin-top: 8px;
+	}     
+	.legend img {
+		width: 22px;
+		height: 22px;
+		float: left;
+	}
+
+	.legend p {
+		font-size: 12px;
+		line-height: 22px;
+		margin: 0;
+	}                                                                                                                                                                                                                           
+</style>
+</head>
+<body>
+  <div id="map" style="width: 100%; height: 100%"></div>
+  <body>
+	<button id="helpbutton" role="button" class="btn btn-primary">Healthy   Living   Information</button>
+	<div id="helpsidebar">
+    <h1>Quick Reference Guide</h1>
+    <div>This is the quick help document where you can find useful information about the map you're looking at!
+	</div>
+	<button id="homepage" role="button" class="btn btn-primary">Eco Communities NI Project</button>
+	
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.6.2/leaflet.js"></script> 
+  <script src="assets/default-extent/leaflet.defaultextent.js"></script>
+  <script src="assets/geocoder/Control.OSMGeocoder.js"></script> 
+  <script src="assets/icons/marker-resize-svg.js"></script>
+  <script src="assets/icons/svg-icon.js"></script>
+  <script src="data/RAILWAY.json"></script>
+  <script src="data/pedestriancrossing.json"></script>  
+  <script src="data/points_rand.js"></script>
+  <script src="data/BUS_STOPS.json"></script> 
+  <script src="data/RAIL_STATIONS.json"></script> 
+  <script src="assets/cluster/leaflet.markercluster-src.js"></script>
+  <script  src = "assets/search/leaflet-search.js" > </script>
+  <script src = "assets/button/L.Control.Button.js" > </script> 
+  <script src = "assets/sidebar/L.Control.Sidebar.js" > </script> 
+  <script>
+
+	
+	var osmLink = '<a href="http://openstreetmap.org">OpenStreetMap</a>',
+		topoLink = '<a href="http://{s}.tile.opentopomap.org">OpenTopoMap</a>',
+		thunLink = '<a href="http://thunderforest.com/">Thunderforest</a>';
+		
+	var osmUrl = 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+		osmAttrib = '&copy; ' + osmLink + ' Contributors',
+		topoUrl = 'http://{s}.tile.opentopomap.org/{z}/{x}/{y}.png',
+		topoAttrib = '&copy; ' + topoLink + ' Contributors',
+		landUrl = 'http://{s}.tile.thunderforest.com/landscape/{z}/{x}/{y}.png',
+		thunAttrib = '&copy; '+osmLink+' Contributors & '+thunLink;
+		
+	var osmMap = L.tileLayer(osmUrl, {attribution: osmAttrib}),
+		topoMap = L.tileLayer(topoUrl, {attribution: topoAttrib}),
+		landMap = L.tileLayer(landUrl, {attribution: thunAttrib});
+		
+	var map = L.map('map', {
+	    layers: [osmMap] // only add one!
+    })
+    .setView([54.655078, -6.969706], 9);
+    
+    L.control.defaultExtent().addTo(map);
+		
+    
+    var baseLayers = {
+	"OSM Mapnik": osmMap,
+	"Topography": topoMap,
+	"Landscape": landMap
+	};
+
+	L.control.layers(baseLayers).addTo(map);
+	
+	var osmGeocoder = new L.Control.OSMGeocoder({
+            collapsed: 'true',
+            position: 'topleft',
+            text: 'My Area',
+			});
+        map.addControl(osmGeocoder);
+        
+        
+        
+    var crossingIcon = L.Icon.extend({
+		options: {
+			iconSize:     [38, 95],
+			iconAnchor:   [22, 94],
+			popupAnchor:  [-3, -76]
+		}
+	});
+	
+	var railstyle = {
+		"color": "black",
+		"weight": 5,
+		"opacity": 0.9
+	};
+	
+	var railways = L.geoJson(railway, {
+		style: railstyle
+	}).addTo(map);
+		
+	
+	var markers = L.markerClusterGroup({ disableClusteringAtZoom: 13 });
+	var crossings = L.geoJson(crossings, {
+		pointToLayer: function (feature, latlng) {
+			var smallIcon = L.icon({
+				iconSize: [20],
+				iconAnchor: [13, 27],
+				popupAnchor: [1, -24],
+				fillColor: 'yellow',
+				iconUrl: 'data/icons/' + feature.properties.CROSSING_TYPE_NAME + '.svg'
+			});
+			return L.marker(latlng, {icon:smallIcon});
+		},
+			   
+		onEachFeature: function (feature, layer) //functionality on click on feature
+			{
+				
+			layer.bindPopup("Type: " + feature.properties.CROSSING_TYPE_NAME + '</b><br>' + "Name: " + feature.properties.SECTION_NAME); //crossing information
+			}
+		}).addTo(markers.addTo(map));
+		
+		var colors = {
+        "playgroup not in a school": 'brown',
+        "playgroup in a school": 'orange',
+        "day nursery": 'yellow',
+        "prep dept": 'black',
+        "Nursery": 'green',
+        "Primary": 'red',
+        "Secondary": 'blue',
+        "Grammar": 'purple',
+        "Special Schools": 'pink'
+		};
+		
+		var points_rand = L.geoJson(points, {
+		pointToLayer: function (feature, latlng) {                    
+                return new L.CircleMarker(latlng, {
+                    radius: 4,
+                    fillColor: colors[feature.properties.SCHOOL_TYP],
+                    color: colors[feature.properties.SCHOOL_TYP],
+                    weight: 1,
+                    opacity: 1,
+                    fillOpacity: 0.8,
+                    clickable: true
+                });
+            },
+		onEachFeature: function (feature, layer) //functionality on click on feature
+			{
+				
+			layer.bindPopup("Name: " + feature.properties.CENTRE_NAM + '</b><br>' + "Address: " + feature.properties.ADDRESS + '</b><br>' + "Postcode: " + feature.properties.POSTCODE + '</b><br>' + "School Type: " + feature.properties.SCHOOL_TYP); //School information
+			}
+		});
+		
+	
+	function getColour(d) {
+		switch (d) {
+			case 'playgroup not in a school': return 'brown';
+			case 'playgroup in a school': return 'orange';
+			case 'day nursery': return 'yellow';
+			case 'prep dept': return 'black';
+			case 'Nursery': return 'green';
+			case 'Primary': return 'red';
+			case 'Secondary': return 'blue';
+			case 'Grammar': return 'purple';
+			case 'Special Schools': return 'pink';
+			default: return 'grey';
+		}
+	};
+	
+	var rail_stations = L.geoJson(stations, {
+		pointToLayer: function (feature, latlng) {                    
+                return new L.CircleMarker(latlng, {
+                    radius: 6,
+                    fillColor: "black",
+                    color: "black",
+                    weight: 1,
+                    opacity: 1,
+                    fillOpacity: 1,
+                    clickable: true
+                });
+            },
+		onEachFeature: function (feature, layer) //functionality on click on feature
+			{
+				
+			layer.bindPopup("Station: " + feature.properties.STATION); //Rail station information
+			}
+		});
+		
+	var bus_stops = L.geoJson(stops, {
+		pointToLayer: function (feature, latlng) {                    
+                return new L.CircleMarker(latlng, {
+                    radius: 3,
+                    fillColor: "#39CCCC",
+                    color: "#39CCCC",
+                    weight: 0.5,
+                    opacity: 1,
+                    fillOpacity: 0.5,
+                    clickable: true
+                });
+            },
+		onEachFeature: function (feature, layer) //functionality on click on feature
+			{
+				
+			layer.bindPopup("Stop: " + feature.properties.Stop_Name + '</b><br>' + "Operational Area: " + feature.properties.DepotOpsAr + '</b><br>' + "Direction: " + feature.properties.ServiceDir); //Bus Stop information
+			}
+		});	
+	
+	var overlayMaps = { //put all overlay layers into one variable container
+			"Schools": points_rand,
+			"Railways Stations": rail_stations,
+			"Bus Stops": bus_stops
+		};
+		
+
+	L.control.layers(overlayMaps).addTo(map); // add vector layers to map
+	
+	/*var searchControl = new L.Control.Search({
+		layer: markers,
+		propertyName: 'CENTRE_NAM',
+		circleLocation: true,
+		moveToLocation: function(latlng, title, map) {
+			//map.fitBounds( latlng.layer.getBounds() );
+			var zoom = map.getBoundsZoom(latlng.layer.getBounds());
+  			map.setView(latlng, zoom); // access the zoom
+		}
+		});
+	
+	searchControl.on('search_locationfound', function(e) {
+		on('search_collapsed', function(e) {
+			markers.resetStyle(layer);
+	})
+	});
+			
+	map.addControl( searchControl );  //inizialize search control
+	*/
+	
+		
+	var legend = L.control({position: 'bottomright'});
+	legend.onAdd = function (map) {
+		var div = L.DomUtil.create('div', 'info legend');
+		div.innerHTML += '<img src="data/icons/SIGNAL CONTROLLED.png" class="legend i" style="background" <span style="font-weight: 600;">Signal Controlled Crossing</span><br>' +
+		'<img src="data/icons/UNCONTROLLED.png" class="legend i" style="background" <span style="font-weight: 600;">Uncontrolled Crossing</span><br>' +
+		'<img src="data/icons/UNKNOWN.png" class="legend i" style="background" <span style="font-weight: 600;">Unknown Crossing Type</span><br>';
+		return div;
+	};
+	
+	legend.addTo(map);
+	
+	var homepagebutton = new L.Control.Button(L.DomUtil.get('homepage'), { toggleButton: 'active' });
+	homepagebutton.addTo(map);
+	homepagebutton.on('click', function () {
+    window.location.href = 'https://ecocommni.github.io/BootstrapTest/'
+	});
+	
+	sidebar = L.control.sidebar('helpsidebar', { position: 'right' });
+	sidebar.addTo(map);
+
+	helpButton = new L.Control.Button(L.DomUtil.get('helpbutton'), { toggleButton: 'active' });
+	helpButton.addTo(map);
+	helpButton.on('click', function () {
+    if (helpButton.isToggled()) {
+        sidebar.hide();
+    } else {
+        sidebar.show();
+    }
+	});
+
+  </script>
+ </body>
+</html>
+
+

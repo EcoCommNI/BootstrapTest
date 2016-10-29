@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Climate Change</title>
+  <meta charset="utf-8" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.6.2/leaflet.css" />
+  <link href="https://maxcdn.bootstrapcdn.com/bootswatch/3.3.7/yeti/bootstrap.min.css" rel="stylesheet">
+  <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+	<link rel="stylesheet" href="assets/geocoder/Control.OSMGeocoder.css" />
+	<link rel="stylesheet" href="assets/cluster/MarkerCluster.css" />
+	<link rel="stylesheet" href="assets/cluster/MarkerCluster.Default.css" />
+	<link rel = "stylesheet" href = "assets/search/leaflet-search.css"/>
+	<link rel = "stylesheet" href = "assets/default-extent/leaflet.defaultextent.css"/>
+	<link rel="stylesheet" href="assets/sidebar/L.Control.Sidebar.css" />
+
+<style type="text/css">
+    html, body { 
+        height:100%
+    }
+    #map {
+        margin: 1em auto;
+        height:70%;
+    }
+    .info {
+    padding: 6px 8px;
+    font: 14px/16px Arial, Helvetica, sans-serif;
+    background: white;
+    background: rgba(255,255,255,0.8);
+    box-shadow: 0 0 15px rgba(0,0,0,0.2);
+    border-radius: 5px;
+	}
+	.info h4 {
+    margin: 0 0 5px;
+    color: #777;
+	}
+  
+    .legend {
+	text-align: left;
+	line-height: 18px;
+	color: #555;
+	}
+	.legend i {
+	width: 18px;
+	height: 18px;
+	float: left;
+	margin-right: 8px;
+	opacity: 0.7;
+	}
+	.legend .circle {
+	border-radius: 50%;
+	width: 10px;
+	height: 10px;
+	margin-top: 8px;
+	}                                                                                                                                                                                                            
+</style>
+</head>
+<body>
+  <div id="map" style="width: 100%; height: 100%"></div>
+	<button id="helpbutton" role="button" class="btn btn-primary">Schools and Area Information</button>
+	<div id="helpsidebar">
+    <h1>Quick Reference Guide</h1>
+    <div>This is the quick help document where you can find useful information about the map you're looking at!
+	</div>
+	<button id="homepage" role="button" class="btn btn-primary">Eco Communities NI Project</button>
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.6.2/leaflet.js"></script> 
+  <script src="assets/default-extent/leaflet.defaultextent.js"></script>
+  <script src="assets/geocoder/Control.OSMGeocoder.js"></script>   
+  <script src="data/points_rand.js"></script>
+  <script src="assets/cluster/leaflet.markercluster-src.js"></script>
+  <script  src = "assets/search/leaflet-search.js" > </script>
+  <script src = "assets/button/L.Control.Button.js" > </script> 
+  <script src = "assets/sidebar/L.Control.Sidebar.js" > </script> 
+  <script>
+	var osmLink = '<a href="http://openstreetmap.org">OpenStreetMap</a>',
+		topoLink = '<a href="http://{s}.tile.opentopomap.org">OpenTopoMap</a>',
+		thunLink = '<a href="http://thunderforest.com/">Thunderforest</a>';
+		
+	var osmUrl = 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+		osmAttrib = '&copy; ' + osmLink + ' Contributors',
+		topoUrl = 'http://{s}.tile.opentopomap.org/{z}/{x}/{y}.png',
+		topoAttrib = '&copy; ' + topoLink + ' Contributors',
+		landUrl = 'http://{s}.tile.thunderforest.com/landscape/{z}/{x}/{y}.png',
+		thunAttrib = '&copy; '+osmLink+' Contributors & '+thunLink;
+		
+	var osmMap = L.tileLayer(osmUrl, {attribution: osmAttrib}),
+		topoMap = L.tileLayer(topoUrl, {attribution: topoAttrib}),
+		landMap = L.tileLayer(landUrl, {attribution: thunAttrib});
+		
+	
+	var tilesUrl = 'http://localhost:8000/tiles/TileNB/DTM_NI_WGS/{z}/{x}/{y}.png',
+	tilesLayer = new L.TileLayer(tilesUrl);
+ 
+	var map = new L.Map('map');
+	map.setView(new L.LatLng(54.655078, -6.969706), 9);
+	map.addLayer(osmMap);
+	map.addLayer(tilesLayer);
+	
+	
+	var baseLayers = {
+	"OSM Mapnik": osmMap,
+	"Topography": topoMap,
+	"Landscape": landMap
+	};
+	
+	var overlayMaps = {
+		"Elevation": tilesLayer
+	};
+
+	L.control.layers(baseLayers).addTo(map);
+	L.control.layers(overlayMaps).addTo(map);
+	
+	var homepagebutton = new L.Control.Button(L.DomUtil.get('homepage'), { toggleButton: 'active' });
+	homepagebutton.addTo(map);
+	homepagebutton.on('click', function () {
+    window.location.href = 'https://ecocommni.github.io/BootstrapTest/'
+	});
+	
+	sidebar = L.control.sidebar('helpsidebar', { position: 'right' });
+	sidebar.addTo(map);
+
+	helpButton = new L.Control.Button(L.DomUtil.get('helpbutton'), { toggleButton: 'active' });
+	helpButton.addTo(map);
+	helpButton.on('click', function () {
+    if (helpButton.isToggled()) {
+        sidebar.hide();
+    } else {
+        sidebar.show();
+    }
+	});
+
+  </script>
+ </body>
+</html>
+
+
