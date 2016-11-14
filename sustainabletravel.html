@@ -71,10 +71,20 @@
 <body>
   <div id="map" style="width: 100%; height: 100%"></div>
   <body>
-	<button id="helpbutton" role="button" class="btn btn-primary">Healthy   Living   Information</button>
+	<button id="helpbutton" role="button" class="btn btn-primary">Sustainable Travel Information</button>
 	<div id="helpsidebar">
-    <h1>Quick Reference Guide</h1>
-    <div>This is the quick help document where you can find useful information about the map you're looking at!
+    <h1>Sustainable Travel</h1>
+    <div><b>What is sustainable travel?</b><br><br>
+    Sustainable travel is defined by choosing to make a journey by foot, by bike, by bus or rail, by motorbike or by car sharing. There are a number of benefits to sustainable travel including:
+    <ul>
+  <li>Environmental - less congestion, less atmospheric carbon, better air quality.</li>
+  <li>Health and Wellbeing - walking or cycling can help to build activity into our daily lives.</li>
+  <li>Financial - cost savings by walking, cycling or using public transport.</li>
+	</ul>
+    This map show some of the ways in which we choose more sustainable ways to travel to school, work or for any journey.<br><br>
+    <b>How close are you to pedestrian crossings for safely crossing main roads? Are there any bus stops nearby? Can I plan to travel using the bus?</b><br><br>
+    To think about these questions use the different data included with this map. Use the layers button to turn on different data - bus stops, railway stations, and cycle networks (off road and on road).<br><br>
+    Bus, rail and pedestrian crossing data open to access from <a href="https://www.opendatani.gov.uk/">OpenDataNI</a> under a UK Open Government Licence. 
 	</div>
 	<button id="homepage" role="button" class="btn btn-primary">Eco Communities NI Project</button>
 	
@@ -87,7 +97,9 @@
   <script src="data/pedestriancrossing.json"></script>  
   <script src="data/points_rand.js"></script>
   <script src="data/BUS_STOPS.json"></script> 
-  <script src="data/RAIL_STATIONS.json"></script> 
+  <script src="data/OFF_ROAD_CYCLE.json"></script>
+  <script src="data/ON_ROAD_CYCLE.json"></script> 
+  <script src="data/RAIL_STATIONS.json"></script>  
   <script src="assets/cluster/leaflet.markercluster-src.js"></script>
   <script  src = "assets/search/leaflet-search.js" > </script>
   <script src = "assets/button/L.Control.Button.js" > </script> 
@@ -113,7 +125,7 @@
 	var map = L.map('map', {
 	    layers: [osmMap] // only add one!
     })
-    .setView([54.465891, -6.334719], 13);
+    .setView([54.594573, -5.948599], 12);
     
     L.control.defaultExtent().addTo(map);
 		
@@ -172,7 +184,8 @@
 				
 			layer.bindPopup("Type: " + feature.properties.CROSSING_TYPE_NAME + '</b><br>' + "Name: " + feature.properties.SECTION_NAME); //crossing information
 			}
-		}).addTo(markers.addTo(map));
+			}).addTo(markers);
+		//}).addTo(markers.addTo(map));
 		//}).addTo(map);
 		
 		var colors = {
@@ -259,12 +272,38 @@
 			layer.bindPopup("Stop: " + feature.properties.Stop_Name + '</b><br>' + "Operational Area: " + feature.properties.DepotOpsAr + '</b><br>' + "Direction: " + feature.properties.ServiceDir); //Bus Stop information
 			}
 		});	
+		
+	var onRoadCycle = L.geoJson(onroad , {
+			style: function(feature) {
+				return {
+					color: "#0000FF",
+					fillColor: "#0000FF",
+					weight: 2,
+					opacity: 1,
+					fillOpacity: 1
+				}
+			}
+		});
+		
+	var offRoadCycle = L.geoJson(offroad , {
+			style: function(feature) {
+				return {
+					color: "#FF0000",
+					fillColor: "#FF0000",
+					weight: 2,
+					opacity: 1,
+					fillOpacity: 1
+				}
+			}
+		}).addTo(map);
 	
 	var overlayMaps = { //put all overlay layers into one variable container
 			"Pedestrian Crossings": markers,
 			"Schools": points_rand,
 			"Railways Stations": rail_stations,
-			"Bus Stops": bus_stops
+			"Bus Stops": bus_stops,
+			"Off Road Cycle Routes": offRoadCycle,
+			"On Road Cycle Routes": onRoadCycle
 		};
 		
 

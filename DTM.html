@@ -56,17 +56,24 @@
 </head>
 <body>
   <div id="map" style="width: 100%; height: 100%"></div>
-	<button id="helpbutton" role="button" class="btn btn-primary">Schools and Area Information</button>
+	<button id="helpbutton" role="button" class="btn btn-primary">Local Climate Change</button>
 	<div id="helpsidebar">
-    <h1>Quick Reference Guide</h1>
-    <div>This is the quick help document where you can find useful information about the map you're looking at!
+    <h1>Local Climate Change</h1><br><br>
+    <div>This map explores local climate change in relation to temperature and flooding.<br><br>
+    The map shows an elevation (height) surface for Northern Ireland. This surface is in metres above sea level.<br><br>
+    <b>If climate change has been linked to a rise in sea levels, what areas of land within Northern Ireland could be affected by increased flooding in the future?</b><br><br>
+    Explore the different datasets within the menu button. Elevation data is the surafce of heights. The flood under current climatic shows the modelled result based on current the current coastline, elevation and climatic conditions. Areas of land which could be liable to flooding in extreme storm events based on an extreme water level of 262cm are displayed. This value of 262cm is based on the 1:100 year average for extreme water levels.
+    The flood under high climatic conditions shows a similar modelled result based on the 1:100 year average but accounts for an additional 56cm rise due to a high level of climate change. This data is based on <a href="https://www.gov.uk/government/uploads/system/uploads/attachment_data/file/69257/pb13274-uk-climate-projections-090617.pdf">UK Climate Projects (UKCP09)</a>
+    World Climate data is openly available from <a href="http://www.worldclim.org/">Worldclim.org</a> under an open Licence. 
+    
 	</div>
 	<button id="homepage" role="button" class="btn btn-primary">Eco Communities NI Project</button>
   
   <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.6.2/leaflet.js"></script> 
   <script src="assets/default-extent/leaflet.defaultextent.js"></script>
   <script src="assets/geocoder/Control.OSMGeocoder.js"></script>   
-  <script src="data/points_rand.js"></script>
+  <script src="data/CURRENT_FLOOD.json"></script>
+  <script src="data/HGH_FLOOD.json"></script>
   <script src="assets/cluster/leaflet.markercluster-src.js"></script>
   <script  src = "assets/search/leaflet-search.js" > </script>
   <script src = "assets/button/L.Control.Button.js" > </script> 
@@ -96,6 +103,33 @@
 	map.addLayer(osmMap);
 	map.addLayer(tilesLayer);
 	
+	var tilesUrlclimMin = 'http://localhost:8000/tiles/TileNB/CLIMATE/CLIM_MIN_S/{z}/{x}/{y}.png',
+	tilesClimMin = new L.TileLayer(tilesUrlclimMin);
+	
+	var floodCClimate = L.geoJson(currflood , {
+			style: function(feature) {
+				return {
+					color: "#0000FF",
+					fillColor: "#0000FF",
+					weight: 2,
+					opacity: 1,
+					fillOpacity: 0.5
+				}
+			}
+		});
+	
+	var floodHClimate = L.geoJson(highflood , {
+			style: function(feature) {
+				return {
+					color: "#FF0000",
+					fillColor: "#FF0000",
+					weight: 2,
+					opacity: 1,
+					fillOpacity: 0.5
+				}
+			}
+		});
+	
 	
 	var baseLayers = {
 	"OSM Mapnik": osmMap,
@@ -104,6 +138,9 @@
 	};
 	
 	var overlayMaps = {
+		"Climate Annual Minimum 1960-1990": tilesClimMin, 
+		"Flood under current climatic conditions": floodCClimate,
+		"Flood under high climatic conditions": floodHClimate,
 		"Elevation": tilesLayer
 	};
 
