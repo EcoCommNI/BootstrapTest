@@ -113,7 +113,7 @@
 	var map = L.map('map', {
 	    layers: [osmMap] // only add one!
     })
-    .setView([54.655078, -6.969706], 9);
+    .setView([54.465891, -6.334719], 13);
     
     L.control.defaultExtent().addTo(map);
 		
@@ -154,15 +154,15 @@
 	}).addTo(map);
 		
 	
-	var markers = L.markerClusterGroup({ disableClusteringAtZoom: 13 });
+	var markers = L.markerClusterGroup({ disableClusteringAtZoom: 12 });
 	var crossings = L.geoJson(crossings, {
 		pointToLayer: function (feature, latlng) {
 			var smallIcon = L.icon({
-				iconSize: [20],
+				iconSize: [15],
 				iconAnchor: [13, 27],
 				popupAnchor: [1, -24],
 				fillColor: 'yellow',
-				iconUrl: 'data/icons/' + feature.properties.CROSSING_TYPE_NAME + '.svg'
+				iconUrl: 'data/icons/' + feature.properties.CROSSING_TYPE_NAME + '.png'
 			});
 			return L.marker(latlng, {icon:smallIcon});
 		},
@@ -173,6 +173,7 @@
 			layer.bindPopup("Type: " + feature.properties.CROSSING_TYPE_NAME + '</b><br>' + "Name: " + feature.properties.SECTION_NAME); //crossing information
 			}
 		}).addTo(markers.addTo(map));
+		//}).addTo(map);
 		
 		var colors = {
         "playgroup not in a school": 'brown',
@@ -260,6 +261,7 @@
 		});	
 	
 	var overlayMaps = { //put all overlay layers into one variable container
+			"Pedestrian Crossings": markers,
 			"Schools": points_rand,
 			"Railways Stations": rail_stations,
 			"Bus Stops": bus_stops
