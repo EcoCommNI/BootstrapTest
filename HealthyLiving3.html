@@ -84,7 +84,8 @@
     <div>This map shows all the places within Northern Ireland where we can be active and sporty. These are active places. <br><br>
     <b>Where are my nearest sports facilities?</b><br><br>
     Drag the blue marker to your location. The circle shows a radius of 1 mile around your location. Look and see how many facilities are in this area. To find out more information about the active places click on the icons.<br><br>
-    Active Places NI data open to access from <a href="https://www.opendatani.gov.uk/">OpenDataNI</a> under a UK Open Government Licence. 
+    Discover national cycle networks within Northern Ireland by displaying the dataset in the layers menu. The network covers a large part of the province. Click on a network to find out the route name and description.<br><br>
+    Active Places NI data open to access from <a href="https://www.opendatani.gov.uk/">OpenDataNI</a> under a UK Open Government Licence. The national cycle network is open data available from <a href="https://www.opencyclemap.org/">OpenCycleMap.</a>
 	</div>
 	<button id="homepage" role="button" class="btn btn-primary">Eco Communities NI Project</button>
 	
@@ -226,19 +227,13 @@
 		marker: L.circle([0,0], {radius: 2000, opacity: 1, weight: 1, fillOpacity: 0.4}),
 		text: 'Search Facilities',
 		zoom: 10,
-		//circleLocation: true,
-		/*moveToLocation: function(latlng, title, map) {
-			//map.fitBounds( latlng.layer.getBounds() );
-			var zoom = map.getBoundsZoom(latlng.layer.getBounds());
-  			map.setView(latlng, zoom); // access the zoom
-		}
-	});*/
+	
 	});
 	
 	
 	searchControl.on('search_locationfound', function(e) {
 		
-		//var locLatLng = e.getLatLngs();
+		
 		
 		e.layer.setStyle({fillColor: '#3f0', color: '#0f0', radius: '2000'});
 		}).on('search_collapsed', function(e) {
@@ -292,30 +287,6 @@
         marker.on('drag', function(){removeBuff(), updateBuffer()});
         updateBuffer();
 	
-	
-	/*var info = L.control({position: 'bottomleft'});
-
-        info.onAdd = function (map) {
-            this._div = L.DomUtil.create('div', 'info'); // create a div with a class "info"
-            this.update();
-            return this._div;
-        };
-        info.update = function (feature) {
-			if (feature) {
-				var props = feature.properties;
-			}
-				if (props) {
-					propName = props.Name;
-					propsType = props.Type;
-				}
-	
-	/*this._div.innerHTML = '<h4>Active Place</h4>' +  (props ?
-    '<b>' + props.Name + '</b><br />' + props.Type + ' people / mi<sup>2</sup><br /><b>ID: ' + propsID + '</b>'
-				: 'Hover over a state');
-		};
-
-		info.addTo(map);*/
-		
 
 	var legend = L.control({position: 'bottomright'});
 	legend.onAdd = function (map) {
