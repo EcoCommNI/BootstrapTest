@@ -99,7 +99,8 @@
   <script src="data/BUS_STOPS.json"></script> 
   <script src="data/OFF_ROAD_CYCLE.json"></script>
   <script src="data/ON_ROAD_CYCLE.json"></script> 
-  <script src="data/RAIL_STATIONS.json"></script>  
+  <script src="data/RAIL_STATIONS.json"></script>
+  <script src="data/METRO_BUS.json"></script>   
   <script src="assets/cluster/leaflet.markercluster-src.js"></script>
   <script  src = "assets/search/leaflet-search.js" > </script>
   <script src = "assets/button/L.Control.Button.js" > </script> 
@@ -296,12 +297,30 @@
 				}
 			}
 		}).addTo(map);
+		
+	var metroBus = L.geoJson(metrobus , {
+			style: function(feature) {
+				return {
+					color: "#FF69B4",
+					fillColor: "#FF69B4",
+					weight: 2,
+					opacity: 1,
+					fillOpacity: 1
+				}
+			},
+			onEachFeature: function (feature, layer) //functionality on click on feature
+			{
+				
+			layer.bindPopup("Route: " + feature.properties.LineEFA_1); //Bus Route information
+			}
+		});
 	
 	var overlayMaps = { //put all overlay layers into one variable container
 			"Pedestrian Crossings": markers,
 			"Schools": points_rand,
 			"Railways Stations": rail_stations,
 			"Bus Stops": bus_stops,
+			"Metro Bus Routes": metroBus,
 			"Off Road Cycle Routes": offRoadCycle,
 			"On Road Cycle Routes": onRoadCycle
 		};
