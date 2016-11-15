@@ -312,7 +312,7 @@ var recyCentres = L.geoJson(recCentres, {
 	function onEachFeatureChange(feature, layer) {
 		//var chartUrl = 'data/CHARTS/' + feature.properties.LGDName + '.png';
 		switch (feature.properties.LGDName) {
-			case 'ANTRIM' : return layer.bindPopup('<img src="data/CHARTS/Antrim.png" alt="" width="300px"/>'+ " % Increase from 2006 to 2015: " + feature.properties.PerC06_15);
+			case 'ANTRIM' : return layer.bindPopup('<img src="data/CHARTS/ANTRIM.png" alt="" width="300px"/>'+ " % Increase from 2006 to 2015: " + feature.properties.PerC06_15);
 			case 'ARDS' : return layer.bindPopup('<img src="data/CHARTS/Ards.png" alt="" width="300px"/>'+ " % Increase from 2006 to 2015: " + feature.properties.PerC06_15);
 			case 'ARMAGH' : return layer.bindPopup('<img src="data/CHARTS/Armagh.png" alt="" width="300px"/>'+ " % Increase from 2006 to 2015: " + feature.properties.PerC06_15);
 			case 'BALLYMENA' : return layer.bindPopup('<img src="data/CHARTS/Ballymena.png" alt="" width="300px"/>'+ " % Increase from 2006 to 2015: " + feature.properties.PerC06_15);
@@ -338,7 +338,7 @@ var recyCentres = L.geoJson(recCentres, {
 			case 'NORTH DOWN' : return layer.bindPopup('<img src="data/CHARTS/NorthDown.png" alt="" width="300px"/>'+ " % Increase from 2006 to 2015: " + feature.properties.PerC06_15);
 			case 'OMAGH' : return layer.bindPopup('<img src="data/CHARTS/Omagh.png" alt="" width="300px"/>'+ " % Increase from 2006 to 2015: " + feature.properties.PerC06_15);
 			case 'STRABANE' : return layer.bindPopup('<img src="data/CHARTS/Strabane.png" alt="" width="300px"/>'+ " % Increase from 2006 to 2015: " + feature.properties.PerC06_15);
-			default: layer.bindPopup('<img src="data/CHARTS/Antrim.png" alt="" width="300px"/>'+ " % Increase from 2006 to 2015: " + feature.properties.PerC06_15);
+			default: layer.bindPopup('<img src="data/CHARTS/ANTRIM.png" alt="" width="300px"/>'+ " % Increase from 2006 to 2015: " + feature.properties.PerC06_15);
 		}
 		//layer.bindPopup('<img src="data/CHARTS/Antrim.png" alt="" width="300px"/>');
 		//layer.bindPopup( "<img src=" + chartUrl + "/> District: " + feature.properties.LGDName + " % Increase: " + feature.properties.PerC06_15);

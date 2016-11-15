@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Biodiversity</title>
+    <meta charset="utf-8">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.6.2/leaflet.js"></script> 
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.6.2/leaflet.css" />
+    <link href="https://maxcdn.bootstrapcdn.com/bootswatch/3.3.7/yeti/bootstrap.min.css" rel="stylesheet">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+  <!--Home Button ie Default Extent-->
+  <link rel="stylesheet" href="assets/default-extent/leaflet.defaultextent.css" />
+  <script src="assets/default-extent/leaflet.defaultextent.js"></script>
+  <!--locate control from source -->
+  <link rel="stylesheet" href="assets/control-locate/L.Control.Locate.min.css" />
+  <script src="assets/control-locate/L.Control.Locate.min.js"></script>
+  <!--Leaflet Hash via Mapbox CDN-->
+  <script src='https://api.tiles.mapbox.com/mapbox.js/plugins/leaflet-hash/v0.2.1/leaflet-hash.js'></script>
+  <!-- Leaflet Omnivore Plugin GeoJson KML Etc -->
+  <script src='https://api.tiles.mapbox.com/mapbox.js/plugins/leaflet-omnivore/v0.2.0/leaflet-omnivore.min.js'></script>
+  <link rel="stylesheet" href="https://k4r573n.github.io/leaflet-control-osm-geocoder/Control.OSMGeocoder.css"/>
+  <script src="https://k4r573n.github.io/leaflet-control-osm-geocoder/Control.OSMGeocoder.js"></script>
+  <!-- leaflet search -->
+  <link rel="stylesheet" href="assets/search/leaflet-search.min.css" />
+  <script src="assets/search/leaflet-search.src.js"></script>
+
+  <link rel="stylesheet" href="assets/cluster/MarkerCluster.css" />
+<link rel="stylesheet" href="assets/cluster/MarkerCluster.Default.css" />
+<link rel="stylesheet" href="assets/sidebar/L.Control.Sidebar.css" />
+<link rel="stylesheet" href="assets/easy-button/easy-button.css" />
+ 	
+    <style type="text/css">
+        html, body { 
+        height:100%
+	}
+
+        #map {
+        margin: 1em auto;
+        height:70%;
+		}
+		.info {
+			padding: 8px 18px;
+			background: white;
+			background: rgba(255,255,255,0.9);
+			box-shadow: 0 0 15px rgba(0,0,0,0.2);
+			border-radius: 5px;
+		}
+		
+		.info h4, .info h3, .info h2 {
+			margin: 0px;
+		}
+		
+		.legend {
+			text-align: left;
+			line-height: 18px;
+			color: #555;
+			font-size: 10px;
+		}
+		
+		.legend i {
+			width: 18px;
+			height: 18px;
+			float: left;
+			margin-right: 30px;
+			opacity: 0.7;
+		}
+		.legend .circle {
+			border-radius: 50%;
+			width: 10px;
+			height: 10px;
+			margin-top: 8px;
+		}
+		.easy-button-button.disabled{
+		display: none;
+		}           
+    </style>
+   
+
+</head>
+<body>
+    <div id="map" style="width: 100%; height: 100%"></div>
+	<button id="helpbutton" role="button" class="btn btn-primary">Biodiversity Information</button>
+	<div id="helpsidebar">
+    <h1>Biodiversity Information</h1>
+    <div>What is biodiversity? It is a term for the variety and changeability of life on Earth. <a href="https://www.wildlifetrusts.org/sites/default/files/files/State%20of%20Nature/State%20of%20Nature%20-%20Northern%20Ireland%20country%20supplement%202%20May.pdf">Habitats</a> and the environment that plants and animals live in are a vital element for flora (plant life) and fauna (animal life). Habitats vary by the type of plants available, the climate and geography of an area.<br><br>
+    <b>Which areas in your local or extended community are suitable habitats for healthy plant and animal life?</b><br><br>
+    On the map, different types of landcover are represented by different colours. Landcover types range from urban to forest to peatbogs and include 31 categories for Northern Ireland. <br><br>
+    <b>3 ways to find your school:</b><br><br>
+    <ul>
+		<li>If you can see your area on the map zoom to it using the zoom tools</li>
+		<li>Search for your local area by street, village, town or city using the search button</li>
+		<li>Search for your school using the school search. Type in the first three letters of the name and choose from the list</li>
+    </ul><br>
+    <b>Explore the area around your school and community.</b><br><br>
+    Use the zoom to default button to view all schools again. Change the background basemap using the basemap icon.
+    Choices include landscape or topography (elevation). To return to the application main page use the Eco Communities NI project button. <br><br>
+    Schools data open to access from <a href="http://www.data.nicva.org/">NICVA</a> under a UK Open Government Licence. 
+    
+    
+	</div>
+	<button id="homepage" role="button" class="btn btn-primary">Eco Communities NI Project</button>
+	<table>
+    <tr>
+        <td style="background-color: #d7191c;">3000 to 3017</td>
+    </tr>
+    <tr>
+        <td style="background-color: #f07c4a;">2500 to 3000</td>
+    </tr>
+    <!-- etc -->
+	</table>
+    <script src="assets/geojson-tiles/geojson-vt-dev.js"></script>
+    <script src="assets/geojson-tiles/L.CanvasTiles.js"></script>
+	<script src='https://api.mapbox.com/mapbox.js/plugins/leaflet-pip/v0.1.0/leaflet-pip.min.js'></script>
+    <script src="data/Rivers_Simplify.json"></script>
+    <script src="data/SPA.json"></script>
+    <script src="data/NNR.json"></script>
+    <script src="assets/cluster/leaflet.markercluster-src.js"></script>
+    <script src="data/BelfastTrees.js"></script>
+    <script src = "assets/button/L.Control.Button.js" > </script> 
+	<script src = "assets/sidebar/L.Control.Sidebar.js" > </script>
+	<script src = "assets/easy-button/easy-button.js" > </script> 
+    
+
+    <script>
+		//Inspiration: http://bl.ocks.org/Sumbera/c67e5551b21c68dc8299
+		//Inspiration: http://bl.ocks.org/sumbera/11114288
+		
+        var leafletMap = L.map('map').setView([54.655078, -6.969706],9);
+        
+        L.control.defaultExtent().addTo(leafletMap);
+        
+		var mapbox = L.tileLayer('https://api.mapbox.com/styles/v1/mapbox/streets-v9/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1IjoibWJhbmRlcnNvbjMiLCJhIjoiY2lscmNwbm91MDhxN3VobTFneGhscXdrOSJ9.v6i-0EYa3CW7icfo0a_Chw', {
+			attribution: '&copy; <a href="https://www.mapbox.com/about/maps/">MapBox</a> &copy; <a href="http://www.openstreetmap.org/about/">OpenStreetMap</a>',
+			maxZoom: 18,
+			});
+
+		var osm = L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+			attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+		});
+		
+		mapbox.addTo(leafletMap);
+		var streets = osm;
+		var transit = mapbox;
+		
+		
+		var basemaps = {
+			"Streets": osm,
+			"Transit": transit
+		};
+		
+		var layerControl = L.control.layers(basemaps, null, {
+		position: 'topright',
+		autoZIndex: false
+		}).addTo(leafletMap);	
+    
+		var overlays;
+    
+    
+    
+		var osmGeocoder = new L.Control.OSMGeocoder({
+            collapsed: 'true',
+            position: 'topleft',
+            text: 'My Area',
+			});
+		leafletMap.addControl(osmGeocoder);
+    
+    
+	var tilesUrl = 'http://localhost:8000/FINAL/data/LC12Tiles/CLC_12/{z}/{x}/{y}.png',
+	tilesLayer = new L.TileLayer(tilesUrl);
+	leafletMap.addLayer(tilesLayer);
+	
+	
+        var riverStyle = {
+			"1": "0.5",
+			"2": "1",
+			"3": "1.3",
+			"4": "1.5",
+			"5": "2",
+			"6": "3",
+			"7": "4"
+		}
+		
+        var river_segments = L.geoJson(rivers, {
+			style: function(feature) {
+				return {
+					color: "#29439c",
+					weight: riverStyle[feature.properties.STRAHLER],
+					opacity: 1.0
+				}
+			}
+		});
+		
+		var nnr = L.geoJson(nnr, {
+			style: function(feature) {
+				return {
+					color: "#8b4513",
+					fillColor: "#8b4513",
+					weight: 2,
+					opacity: 1
+				}
+			}
+		});
+		
+		var spa = L.geoJson(spa, {
+			style: function(feature) {
+				return {
+					color: "#8b668b",
+					weight: 2,
+					opacity: 1
+				}
+			}
+		});
+		
+		var conditiontrees = {
+        "Dead": 'black',
+        "Dying": 'brown',
+        "Fair": 'yellow',
+        "Good": 'green',
+        "Poor": 'orange',
+        "Very Poor": 'red',
+        "N/A": 'grey'
+		};
+		
+		var markerstrees = L.markerClusterGroup({ disableClusteringAtZoom: 14 });
+	
+		var belfast_trees = L.geoJson(treepoints, {
+			pointToLayer: function (feature, latlng) {	                   
+                return new L.CircleMarker(latlng, {
+                    radius: 2,
+                    fillColor: conditiontrees[feature.properties.CONDITION],
+                    color: conditiontrees[feature.properties.CONDITION],
+                    weight: 1,
+                    opacity: 1,
+                    fillOpacity: 0.8,
+                    clickable: true
+                });
+            },
+			onEachFeature: function (feature, layer) //functionality on click on feature
+				{
+					layer.bindPopup("Species Type: " + feature.properties.SPECIESTYP + '</b><br>' + "Species: " + feature.properties.SPECIES + '</b><br>' + "Age: " + feature.properties.AGE + '</b><br>' + "Condition: " + feature.properties.CONDITION); //School information
+				}
+		});
+		markerstrees.addLayer(belfast_trees); // add it to the cluster group
+	
+		
+		
+		var overlayMaps = { //put all overlay layers into one variable container
+			"Rivers": river_segments,
+			"Landcover": tilesLayer,
+			"Belfast Trees": markerstrees,
+			"National Nature Reserves": nnr,
+			"Special Protected Areas - Birds": spa
+		};
+		
+
+		L.control.layers(overlayMaps).addTo(leafletMap); // add vector layers to map
+		
+		
+		function treeColour(d) {
+			switch (d) {
+				case 'Dead': return 'black';
+				case 'Dying': return 'brown';
+				case 'Fair': return 'yellow';
+				case 'Good': return 'green';
+				case 'Poor': return 'orange';
+				case 'Very Poor': return 'red';
+				case 'N/A': return 'grey';
+				default: return 'grey';
+			}
+		};
+		
+		var legend = L.control({position: 'bottomleft'});
+		legend.onAdd = function (leafletMap) {
+		var div = L.DomUtil.create('div', 'info legend');
+		div.innerHTML = '<h6>Landcover Categories</h6><i style="background:#e6004d"></i>Continuous urban fabric<br><i style="background:#ff0000"></i>Discontinuous urban fabric<br><i style="background:#cc4df2"></i>Industrial or commercial units<br>' +
+		'<i style="background:#e6cccc"></i>Port areas<br><i style="background:#e6cce6"></i>Airports<br><i style="background:#a600cc"></i>Mineral extraction sites<br>' +
+		'<i style="background:#a64d00"></i>Dump sites<br><i style="background:#ffa6ff"></i>Green urban areas<br><i style="background:#ffe6ff"></i>Sport and leisure facilities<br>' +
+		'<i style="background:#ffffa8"></i>Non-irrigated arable land<br><i style="background:#e6e64d"></i>Pastures<br><i style="background:#ffe64d"></i>Complex cultivation patterns<br><i style="background:#e6cc4d"></i>Land principally occupied by agriculture<br>' +
+		'<i style="background:#80ff00"></i>Broad-leaved forest<br><i style="background:#00a600"></i>Coniferous forest<br><i style="background:#4dff00"></i>Mixed forest<br><i style="background:#ccf24d"></i>Natural grasslands<br>' +
+		'<i style="background:#a6ff80"></i>Moors and heathland<br><i style="background:#a6f200"></i>Transitional woodland-shrub<br><i style="background:#e6e6e6"></i>Beaches - dunes - sands<br><i style="background:#cccccc"></i>Bare rocks<br>' +
+		'<i style="background:#a6a6ff"></i>Inland marshes<br><i style="background:#4d4dff"></i>Peat bogs<br><i style="background:#a6a6e6"></i>Intertidal flats<br>' +
+		'<i style="background:#00ccf2"></i>Water courses<br><i style="background:#80f2e6"></i>Water bodies<br><i style="background:#a6ffe6"></i>Estuaries<br><i style="background:#e6f2ff"></i>Sea and ocean<br><i style="background:#ffffff"></i>NODATA<br>'
+		return div;
+		};
+		// to reduce size of legend on map remove categories with only 1 or 2 polgons : Sparsely vegetated areas, Construction sites, Road and rail networks and associated land
+		legend.addTo(leafletMap);
+		
+		var legendtree = L.control({position: 'bottomright'});
+		legendtree.onAdd = function (leafletMap) {
+		var div = L.DomUtil.create('div', 'info legend');
+		div.innerHTML += "<h6>Tree Condition</h6>"
+			treeCondition = ['Dead', 'Dying', 'Fair', 'Good', 'Poor', 'Very Poor', 'N/A'];
+		// loop through the tree and generate a label with a coloured square for each value
+		for (var i = 0; i < treeCondition.length; i++) {
+			div.innerHTML += '<i class="circle" style="background:' + treeColour(treeCondition[i]) + '"></i> ' + (treeCondition[i] ? treeCondition[i] + '<br>' : '+');
+		}
+		return div;
+		};
+		legendtree.addTo(leafletMap);
+				
+		
+		//var disclaimer = L.easyButton('<h1>!!!</h1>', function(btn, map){
+		//alert('disclaimer here!!!');
+		//},{position:'bottomright'});
+		//disclaimer.addTo(map);
+		
+		
+		
+		var homepagebutton = new L.Control.Button(L.DomUtil.get('homepage'), { toggleButton: 'active' });
+		homepagebutton.addTo(leafletMap);
+		homepagebutton.on('click', function () {
+		window.location.href = 'https://ecocommni.github.io/BootstrapTest/'
+		});
+	
+		sidebar = L.control.sidebar('helpsidebar', { position: 'right' });
+		sidebar.addTo(leafletMap);
+
+		helpButton = new L.Control.Button(L.DomUtil.get('helpbutton'), { toggleButton: 'active' });
+		helpButton.addTo(leafletMap);
+		helpButton.on('click', function () {
+		if (helpButton.isToggled()) {
+			sidebar.hide();
+		} else {
+			sidebar.show();
+		}
+		});
+	
+	
+    </script>
+</body>
+</html>
