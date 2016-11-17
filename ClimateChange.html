@@ -97,7 +97,7 @@
 		landMap = L.tileLayer(landUrl, {attribution: thunAttrib});
 		
 	
-	var tilesUrl = 'https://github.com/EcoCommNI/BootstrapTest/tree/gh-pages/data/DTM_NI_WGS/{z}/{x}/{y}.png',
+	var tilesUrl = "data/DTM_NI_WGS/{z}/{x}/{y}.png",
 	tilesLayer = new L.TileLayer(tilesUrl);
  
 	var map = new L.Map('map');
@@ -105,7 +105,7 @@
 	map.addLayer(osmMap);
 	map.addLayer(tilesLayer);
 	
-	var tilesUrlclimMin = 'https://github.com/EcoCommNI/BootstrapTest/tree/gh-pages/data/CLIMATE/CLIM_MIN_S/{z}/{x}/{y}.png',
+	var tilesUrlclimMin = "data/CLIMATE/CLIM_MIN_S/{z}/{x}/{y}.png",
 	tilesClimMin = new L.TileLayer(tilesUrlclimMin);
 	
 	var floodCClimate = L.geoJson(currflood , {
